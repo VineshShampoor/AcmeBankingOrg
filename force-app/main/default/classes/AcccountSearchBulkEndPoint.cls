@@ -11,15 +11,29 @@ global without sharing class AcccountSearchBulkEndPoint {
             // return variable : Deserialized at receiving end
             List<Output> lstouts= new List<Output>();
             
+            List<Account> fullList = new List<Account>();
+            
+            Set<String> names = new Set<String>();
+            
             for(Input ip: lst.inputList){
-                String nm = ip.Name;
+                names.add(ip.Name);
+            }
+            
+            fullList = [select Id, Name, Website from Account where Name IN :names ];
+            
+            for(Input ip: lst.inputList){
+                
                 String web = '';
                 if(ip.Website != '' && ip.Website != null){
                     web = ip.Website.replace('http://','').replace('https://','').replace('www.','').split('/[/?#.]/')[0].split('\\.')[0];
                 }
                 
-                System.debug('innn' + nm + web);
-                List<Account> lstemp = Database.query('select Id, Name, Website from Account where Name =:nm and Website LIKE \'%'+ web+'%\'');
+                List<Account> lstemp = new List<Account>();
+                for(Account act: fullList){
+                    if(act.Website.toLowerCase().contains(web)){
+                        lstemp.add(act);
+                    }
+                }
                 
                 Output temp = new Output();
                 

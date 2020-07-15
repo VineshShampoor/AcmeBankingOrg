@@ -27,8 +27,11 @@ public class APIEndpointControllersTest {
             // Perform test
             Test.startTest(); 
             
-            AccountSearchRestController.doGet('name', 'domain');
-            AccountSearchRestController.doGet('name', 'domain!@#$%\'');
+            Account testacc3 = new Account(Name = 'name', Website = 'domain');
+            insert testacc3;
+            
+            System.assert(AccountSearchRestController.doGet('name', 'domain').size() == 1);
+            System.assert(AccountSearchRestController.doGet('name', 'domain!@#$%\'') == null);
             
             AcccountSearchBulkEndPoint.listInput lst=new AcccountSearchBulkEndPoint.listInput();
             lst.inputlist = new List<AcccountSearchBulkEndPoint.Input>();
@@ -38,7 +41,8 @@ public class APIEndpointControllersTest {
             inp.Website = 'testwebsite';
             lst.inputlist.add(inp);
             
-            AcccountSearchBulkEndPoint.doGet(lst);
+            // Assert Number of records returned = 1(inserted above)
+            System.assert(AcccountSearchBulkEndPoint.doGet(lst).size() == 1);
             
             Test.stopTest();
         }
